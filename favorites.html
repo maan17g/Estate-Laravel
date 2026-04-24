@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Saved Properties - Dream Home</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ── PAGE HEADER ── */
+    .fav-header {
+      background: var(--form-bg);
+      border-bottom: 1px solid var(--border-color);
+      padding: 5rem 0 2rem;
+    }
+    .fav-header-inner {
+      display: flex; align-items: center;
+      justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+    }
+    .fav-title { font-size: 1.8rem; font-weight: 700; margin: 0; }
+    .fav-title span { color: var(--primary); }
+    .fav-subtitle { color: var(--text-muted); font-size: 0.88rem; margin-top: 4px; }
+
+    .btn-clear-all {
+      background: transparent; border: 1px solid #e74c3c;
+      color: #e74c3c; padding: 8px 18px; border-radius: 8px;
+      font-size: 0.85rem; font-weight: 600; cursor: pointer;
+      transition: all 0.2s; display: flex; align-items: center; gap: 6px;
+    }
+    .btn-clear-all:hover { background: #e74c3c; color: #fff; }
+
+    /* ── FILTER / SORT BAR ── */
+    .fav-controls {
+      background: var(--bg-body);
+      padding: 1.5rem 0;
+      border-bottom: 1px solid var(--border-color);
+      position: sticky; top: 70px; z-index: 50;
+    }
+    .fav-controls-inner {
+      display: flex; align-items: center;
+      justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+    }
+
+    /* Filter Tabs */
+    .filter-tabs { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+    .filter-tab {
+      padding: 7px 18px; border-radius: 20px;
+      border: 1px solid var(--border-color);
+      background: transparent; color: var(--text-muted);
+      font-size: 0.83rem; font-weight: 500;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .filter-tab:hover { border-color: var(--primary); color: var(--primary); }
+    .filter-tab.active {
+      background: var(--primary); border-color: var(--primary);
+      color: #fff;
+    }
+
+    /* View Toggle */
+    .view-toggle { display: flex; gap: 0.4rem; }
+    .view-btn {
+      width: 36px; height: 36px; border-radius: 8px;
+      border: 1px solid var(--border-color); background: transparent;
+      color: var(--text-muted); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.95rem; transition: all 0.2s;
+    }
+    .view-btn.active, .view-btn:hover {
+      background: var(--primary); border-color: var(--primary); color: #fff;
+    }
+
+    /* ── MAIN SECTION ── */
+    .fav-main { padding: 2.5rem 0 5rem; }
+
+    /* Results label */
+    .fav-results-label {
+      font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.5rem;
+    }
+    .fav-results-label strong { color: var(--text-main); }
+
+    /* ── FAVORITE CARD (grid view) ── */
+    .fav-card {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: 16px; overflow: hidden;
+      transition: all 0.3s; position: relative; height: 100%;
+    }
+    .fav-card:hover { transform: translateY(-8px); box-shadow: 0 16px 40px var(--shadow); border-color: var(--primary); }
+
+    .fav-card-img {
+      position: relative; height: 220px; overflow: hidden;
+    }
+    .fav-card-img img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+    .fav-card:hover .fav-card-img img { transform: scale(1.08); }
+
+    .fav-card-badge {
+      position: absolute; top: 12px; left: 12px;
+      background: var(--primary); color: #fff;
+      padding: 4px 12px; border-radius: 6px;
+      font-size: 0.75rem; font-weight: 600;
+    }
+    .fav-card-badge.rent { background: #0dcaf0; color: #000; }
+    .fav-card-badge.new  { background: #ffc107; color: #000; }
+
+    .fav-card-price {
+      position: absolute; bottom: 12px; right: 12px;
+      background: rgba(0,0,0,0.72); color: #fff;
+      padding: 5px 12px; border-radius: 6px;
+      font-weight: 700; font-size: 0.9rem;
+      backdrop-filter: blur(4px);
+    }
+
+    /* Heart remove button */
+    .fav-remove-btn {
+      position: absolute; top: 12px; right: 12px;
+      width: 34px; height: 34px; border-radius: 50%;
+      background: rgba(255,255,255,0.15); backdrop-filter: blur(4px);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: #e74c3c; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.9rem; transition: all 0.2s;
+    }
+    .fav-remove-btn:hover { background: #e74c3c; color: #fff; border-color: #e74c3c; }
+
+    .fav-card-body { padding: 1.1rem 1.25rem 1.25rem; }
+    .fav-card-title { font-weight: 700; font-size: 1rem; color: var(--text-main); margin-bottom: 4px; }
+    .fav-card-loc { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px; }
+    .fav-card-loc i { color: var(--primary); margin-right: 4px; }
+    .fav-card-stats {
+      display: flex; justify-content: space-between;
+      border-top: 1px solid var(--border-color);
+      padding-top: 0.75rem; margin-top: 0.5rem;
+      font-size: 0.78rem; color: var(--text-muted);
+    }
+    .fav-card-stats span { display: flex; align-items: center; gap: 4px; }
+    .fav-card-stats i { color: var(--primary); }
+    .fav-card-actions { display: flex; gap: 0.5rem; margin-top: 0.9rem; }
+    .btn-fav-view {
+      flex: 1; background: var(--primary); color: #fff; border: none;
+      padding: 9px; border-radius: 8px; font-weight: 600; font-size: 0.82rem;
+      cursor: pointer; transition: background 0.2s; text-decoration: none;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .btn-fav-view:hover { background: var(--primary-hover); color: #fff; }
+    .btn-fav-compare {
+      padding: 9px 14px; border-radius: 8px;
+      border: 1px solid var(--border-color); background: transparent;
+      color: var(--text-muted); font-size: 0.82rem; cursor: pointer;
+      transition: all 0.2s; display: flex; align-items: center; gap: 5px;
+    }
+    .btn-fav-compare:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* ── LIST VIEW ── */
+    .fav-list-card {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: 14px; overflow: hidden; display: flex;
+      margin-bottom: 1rem; transition: all 0.25s;
+    }
+    .fav-list-card:hover { border-color: var(--primary); transform: translateX(4px); }
+    .fav-list-img { width: 200px; height: 140px; object-fit: cover; flex-shrink: 0; }
+    .fav-list-body { flex: 1; padding: 1rem 1.25rem; display: flex; flex-direction: column; justify-content: space-between; }
+    .fav-list-title { font-weight: 700; font-size: 1rem; color: var(--text-main); }
+    .fav-list-meta { font-size: 0.78rem; color: var(--text-muted); margin: 4px 0; }
+    .fav-list-price { font-size: 1.1rem; font-weight: 700; color: var(--primary); }
+    .fav-list-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem; }
+
+    /* ── EMPTY STATE ── */
+    .empty-state {
+      text-align: center; padding: 5rem 2rem;
+      display: none;
+    }
+    .empty-state-icon {
+      width: 90px; height: 90px; border-radius: 50%;
+      background: rgba(60,181,124,0.1); border: 2px solid var(--border-color);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1.5rem; font-size: 2.5rem; color: var(--primary);
+    }
+    .empty-state h4 { font-weight: 700; margin-bottom: 0.5rem; }
+    .empty-state p { color: var(--text-muted); font-size: 0.9rem; max-width: 350px; margin: 0 auto 1.5rem; }
+
+    /* Saved date tag */
+    .fav-saved-date {
+      font-size: 0.7rem; color: var(--text-muted);
+      margin-top: 4px; display: block;
+    }
+
+    @media (max-width: 576px) {
+      .fav-list-img { width: 110px; height: 110px; }
+      .fav-card-img { height: 180px; }
+    }
+  </style>
+</head>
+<body data-theme="dark">
+
+  <!-- NAVBAR -->
+  <header>
+    <nav class="navbar navbar-expand-lg fixed-top" id="navbar">
+      <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="index.html">
+          <i class="bi bi-house-door-fill"></i> Real Estate
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navContent">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navContent">
+          <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-lg-4">
+            <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+            <li class="nav-item"><a class="nav-link active" href="property.html">Properties</a></li>
+            <li class="nav-item"><a class="nav-link" href="about.html">About Us</a></li>
+            <li class="nav-item"><a class="nav-link" href="contact-us.html">Contact</a></li>
+          </ul>
+          <div class="d-flex align-items-center gap-3 flex-column flex-lg-row mt-3 mt-lg-0">
+            <button class="theme-toggle-btn" id="themeToggle"><i class="bi bi-sun-fill"></i></button>
+            <a href="dashboard.html" class="nav-link fw-bold">Dashboard</a>
+            <a href="#" class="btn btn-consult shadow-sm"><i class="bi bi-telephone me-2"></i> Consult</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- PAGE HEADER -->
+  <div class="fav-header">
+    <div class="container">
+      <div class="fav-header-inner">
+        <div>
+          <h1 class="fav-title">Saved Properties <span id="favCount">(6)</span></h1>
+          <p class="fav-subtitle">Your personal collection of dream properties — all in one place.</p>
+        </div>
+        <button class="btn-clear-all" onclick="clearAll()">
+          <i class="bi bi-trash3"></i> Clear All
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FILTER / SORT BAR -->
+  <div class="fav-controls">
+    <div class="container">
+      <div class="fav-controls-inner">
+        <!-- Filter Tabs -->
+        <div class="filter-tabs" id="filterTabs">
+          <button class="filter-tab active" onclick="filterFavs('all', this)">All (6)</button>
+          <button class="filter-tab" onclick="filterFavs('sale', this)">For Sale (4)</button>
+          <button class="filter-tab" onclick="filterFavs('rent', this)">For Rent (1)</button>
+          <button class="filter-tab" onclick="filterFavs('new', this)">New Listing (1)</button>
+        </div>
+        <!-- Sort + View -->
+        <div class="d-flex align-items-center gap-3">
+          <select class="form-select w-auto" style="font-size:0.83rem;" onchange="sortFavs(this.value)">
+            <option value="saved">Recently Saved</option>
+            <option value="price-low">Price: Low to High</option>
+            <option value="price-high">Price: High to Low</option>
+          </select>
+          <div class="view-toggle">
+            <button class="view-btn active" id="gridBtn" onclick="switchView('grid')" title="Grid View"><i class="bi bi-grid-3x3-gap"></i></button>
+            <button class="view-btn" id="listBtn" onclick="switchView('list')" title="List View"><i class="bi bi-list-ul"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <main class="fav-main">
+    <div class="container">
+
+      <div class="fav-results-label">
+        Showing <strong id="showCount">6</strong> saved properties
+      </div>
+
+      <!-- GRID VIEW -->
+      <div id="gridView" class="row g-4">
+
+        <div class="col-lg-4 col-md-6 fav-item" data-status="sale" data-price="850000">
+          <div class="fav-card">
+            <div class="fav-card-img">
+              <img src="https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=600&q=80" alt="Villa">
+              <span class="fav-card-badge">For Sale</span>
+              <span class="fav-card-price">$850,000</span>
+              <button class="fav-remove-btn" onclick="removeFav(this)" title="Remove from favorites"><i class="bi bi-heart-fill"></i></button>
+            </div>
+            <div class="fav-card-body">
+              <div class="fav-card-title">Modern Luxury Villa</div>
+              <div class="fav-card-loc"><i class="bi bi-geo-alt-fill"></i>Beverly Hills, CA</div>
+              <span class="fav-saved-date"><i class="bi bi-clock me-1"></i>Saved 2 hours ago</span>
+              <div class="fav-card-stats">
+                <span><i class="bi bi-door-open"></i> 5 Beds</span>
+                <span><i class="bi bi-droplet-half"></i> 4 Baths</span>
+                <span><i class="bi bi-arrows-fullscreen"></i> 4,500 sqft</span>
+              </div>
+              <div class="fav-card-actions">
+                <a href="property-detail.html" class="btn-fav-view"><i class="bi bi-eye"></i> View</a>
+                <button class="btn-fav-compare"><i class="bi bi-bar-chart-line"></i> Compare</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 fav-item" data-status="new" data-price="2100000">
+          <div class="fav-card">
+            <div class="fav-card-img">
+              <img src="https://images.unsplash.com/photo-1572120360610-d971b9d7767c?auto=format&fit=crop&w=600&q=80" alt="Penthouse">
+              <span class="fav-card-badge new">New Listing</span>
+              <span class="fav-card-price">$2,100,000</span>
+              <button class="fav-remove-btn" onclick="removeFav(this)" title="Remove"><i class="bi bi-heart-fill"></i></button>
+            </div>
+            <div class="fav-card-body">
+              <div class="fav-card-title">Ocean View Penthouse</div>
+              <div class="fav-card-loc"><i class="bi bi-geo-alt-fill"></i>Miami, FL</div>
+              <span class="fav-saved-date"><i class="bi bi-clock me-1"></i>Saved yesterday</span>
+              <div class="fav-card-stats">
+                <span><i class="bi bi-door-open"></i> 3 Beds</span>
+                <span><i class="bi bi-droplet-half"></i> 4 Baths</span>
+                <span><i class="bi bi-arrows-fullscreen"></i> 3,200 sqft</span>
+              </div>
+              <div class="fav-card-actions">
+                <a href="property-detail.html" class="btn-fav-view"><i class="bi bi-eye"></i> View</a>
+                <button class="btn-fav-compare"><i class="bi bi-bar-chart-line"></i> Compare</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 fav-item" data-status="rent" data-price="6500">
+          <div class="fav-card">
+            <div class="fav-card-img">
+              <img src="https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=600&q=80" alt="Townhouse">
+              <span class="fav-card-badge rent">For Rent</span>
+              <span class="fav-card-price">$6,500/mo</span>
+              <button class="fav-remove-btn" onclick="removeFav(this)" title="Remove"><i class="bi bi-heart-fill"></i></button>
+            </div>
+            <div class="fav-card-body">
+              <div class="fav-card-title">Modern Family Townhouse</div>
+              <div class="fav-card-loc"><i class="bi bi-geo-alt-fill"></i>Seattle, WA</div>
+              <span class="fav-saved-date"><i class="bi bi-clock me-1"></i>Saved 2 days ago</span>
+              <div class="fav-card-stats">
+                <span><i class="bi bi-door-open"></i> 4 Beds</span>
+                <span><i class="bi bi-droplet-half"></i> 3 Baths</span>
+                <span><i class="bi bi-arrows-fullscreen"></i> 2,800 sqft</span>
+              </div>
+              <div class="fav-card-actions">
+                <a href="property-detail.html" class="btn-fav-view"><i class="bi bi-eye"></i> View</a>
+                <button class="btn-fav-compare"><i class="bi bi-bar-chart-line"></i> Compare</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 fav-item" data-status="sale" data-price="1250000">
+          <div class="fav-card">
+            <div class="fav-card-img">
+              <img src="https://images.unsplash.com/photo-1600566752355-35792bedcfea?auto=format&fit=crop&w=600&q=80" alt="Apartment">
+              <span class="fav-card-badge">For Sale</span>
+              <span class="fav-card-price">$1,250,000</span>
+              <button class="fav-remove-btn" onclick="removeFav(this)" title="Remove"><i class="bi bi-heart-fill"></i></button>
+            </div>
+            <div class="fav-card-body">
+              <div class="fav-card-title">Contemporary Apartment</div>
+              <div class="fav-card-loc"><i class="bi bi-geo-alt-fill"></i>New York, NY</div>
+              <span class="fav-saved-date"><i class="bi bi-clock me-1"></i>Saved 3 days ago</span>
+              <div class="fav-card-stats">
+                <span><i class="bi bi-door-open"></i> 2 Beds</span>
+                <span><i class="bi bi-droplet-half"></i> 2 Baths</span>
+                <span><i class="bi bi-arrows-fullscreen"></i> 1,800 sqft</span>
+              </div>
+              <div class="fav-card-actions">
+                <a href="property-detail.html" class="btn-fav-view"><i class="bi bi-eye"></i> View</a>
+                <button class="btn-fav-compare"><i class="bi bi-bar-chart-line"></i> Compare</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 fav-item" data-status="sale" data-price="3500000">
+          <div class="fav-card">
+            <div class="fav-card-img">
+              <img src="https://images.unsplash.com/photo-1600047509358-9dc75507daeb?auto=format&fit=crop&w=600&q=80" alt="Estate">
+              <span class="fav-card-badge">For Sale</span>
+              <span class="fav-card-price">$3,500,000</span>
+              <button class="fav-remove-btn" onclick="removeFav(this)" title="Remove"><i class="bi bi-heart-fill"></i></button>
+            </div>
+            <div class="fav-card-body">
+              <div class="fav-card-title">Waterfront Estate</div>
+              <div class="fav-card-loc"><i class="bi bi-geo-alt-fill"></i>Malibu, CA</div>
+              <span class="fav-saved-date"><i class="bi bi-clock me-1"></i>Saved 5 days ago</span>
+              <div class="fav-card-stats">
+                <span><i class="bi bi-door-open"></i> 6 Beds</span>
+                <span><i class="bi bi-droplet-half"></i> 5 Baths</span>
+                <span><i class="bi bi-arrows-fullscreen"></i> 6,200 sqft</span>
+              </div>
+              <div class="fav-card-actions">
+                <a href="property-detail.html" class="btn-fav-view"><i class="bi bi-eye"></i> View</a>
+                <button class="btn-fav-compare"><i class="bi bi-bar-chart-line"></i> Compare</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 fav-item" data-status="sale" data-price="1800000">
+          <div class="fav-card">
+            <div class="fav-card-img">
+              <img src="https://images.unsplash.com/photo-1600607687644-c7171b42498b?auto=format&fit=crop&w=600&q=80" alt="Chalet">
+              <span class="fav-card-badge">For Sale</span>
+              <span class="fav-card-price">$1,800,000</span>
+              <button class="fav-remove-btn" onclick="removeFav(this)" title="Remove"><i class="bi bi-heart-fill"></i></button>
+            </div>
+            <div class="fav-card-body">
+              <div class="fav-card-title">Mountain View Chalet</div>
+              <div class="fav-card-loc"><i class="bi bi-geo-alt-fill"></i>Denver, CO</div>
+              <span class="fav-saved-date"><i class="bi bi-clock me-1"></i>Saved 1 week ago</span>
+              <div class="fav-card-stats">
+                <span><i class="bi bi-door-open"></i> 5 Beds</span>
+                <span><i class="bi bi-droplet-half"></i> 4 Baths</span>
+                <span><i class="bi bi-arrows-fullscreen"></i> 4,100 sqft</span>
+              </div>
+              <div class="fav-card-actions">
+                <a href="property-detail.html" class="btn-fav-view"><i class="bi bi-eye"></i> View</a>
+                <button class="btn-fav-compare"><i class="bi bi-bar-chart-line"></i> Compare</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /gridView -->
+
+      <!-- LIST VIEW (hidden by default) -->
+      <div id="listView" style="display:none;">
+        <!-- Built dynamically by JS -->
+      </div>
+
+      <!-- EMPTY STATE -->
+      <div class="empty-state" id="emptyState">
+        <div class="empty-state-icon"><i class="bi bi-heart"></i></div>
+        <h4>No Saved Properties Yet</h4>
+        <p>Start browsing our listings and tap the heart icon to save properties you love.</p>
+        <a href="property.html" class="btn btn-consult px-4 py-2">
+          <i class="bi bi-search me-2"></i> Browse Properties
+        </a>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="row g-5">
+        <div class="col-lg-4 col-md-6">
+          <a href="index.html" class="footer-brand"><i class="bi bi-house-door-fill"></i> Real Estate</a>
+          <p class="footer-tagline">Building places you're proud to call home — today, tomorrow, and for every milestone in between.</p>
+          <p class="footer-heading mb-2">Stay Updated</p>
+          <div class="footer-newsletter">
+            <input type="email" class="form-control" placeholder="Your email address">
+            <button class="footer-newsletter-btn" type="button"><i class="bi bi-send-fill"></i></button>
+          </div>
+          <div class="footer-socials">
+            <a href="#" class="footer-social-icon"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="footer-social-icon"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="footer-social-icon"><i class="fab fa-x-twitter"></i></a>
+            <a href="#" class="footer-social-icon"><i class="fab fa-linkedin-in"></i></a>
+            <a href="#" class="footer-social-icon"><i class="fab fa-youtube"></i></a>
+          </div>
+        </div>
+        <div class="col-lg-2 col-md-3 col-6">
+          <h6 class="footer-heading">Quick Links</h6>
+          <ul class="footer-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="property.html">Properties</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="contact-us.html">Contact</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-2 col-md-3 col-6">
+          <h6 class="footer-heading">My Account</h6>
+          <ul class="footer-links">
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="favorites.html">Saved Properties</a></li>
+            <li><a href="login.html">Login</a></li>
+            <li><a href="register.html">Register</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-4 col-md-6">
+          <h6 class="footer-heading">Contact Us</h6>
+          <div class="footer-contact-item"><i class="bi bi-geo-alt-fill"></i><div><strong>Our Office</strong>9876 Wilshire Blvd, Suite 500<br>Beverly Hills, CA 90210</div></div>
+          <div class="footer-contact-item"><i class="bi bi-telephone-fill"></i><div><strong>Phone</strong>(310) 555-0100</div></div>
+          <div class="footer-contact-item"><i class="bi bi-envelope-fill"></i><div><strong>Email</strong>info@dreamhome.com</div></div>
+        </div>
+      </div>
+      <hr class="footer-divider">
+      <div class="footer-bottom">
+        <p class="footer-copyright mb-0">&copy; 2025 <span>Dream Home</span>. All Rights Reserved.</p>
+        <div class="footer-bottom-links">
+          <a href="privacy-policy.html">Privacy Policy</a>
+          <a href="terms-conditions.html">Terms of Service</a>
+          <a href="sitemap.html">Sitemap</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast -->
+  <div id="toast" style="position:fixed;bottom:2rem;right:2rem;z-index:9999;background:var(--primary);color:#fff;padding:1rem 1.5rem;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,0.3);display:flex;align-items:center;gap:0.75rem;font-size:0.95rem;font-weight:500;transform:translateY(100px);opacity:0;transition:all 0.4s ease;font-family:var(--font-family);">
+    <i class="bi bi-check-circle-fill"></i> <span id="toastMsg">Removed from favorites</span>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Theme Toggle
+    document.getElementById('themeToggle').addEventListener('click', function() {
+      const body = document.body;
+      const icon = this.querySelector('i');
+      if (body.getAttribute('data-theme') === 'dark') {
+        body.setAttribute('data-theme', 'light');
+        icon.classList.replace('bi-sun-fill', 'bi-moon-fill');
+      } else {
+        body.setAttribute('data-theme', 'dark');
+        icon.classList.replace('bi-moon-fill', 'bi-sun-fill');
+      }
+    });
+
+    window.addEventListener('scroll', () => {
+      document.getElementById('navbar').classList.toggle('nav-scroll', window.scrollY > 50);
+    });
+
+    // Toast
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastMsg').textContent = msg;
+      toast.style.transform = 'translateY(0)'; toast.style.opacity = '1';
+      setTimeout(() => { toast.style.transform = 'translateY(100px)'; toast.style.opacity = '0'; }, 3000);
+    }
+
+    // Remove favorite card
+    function removeFav(btn) {
+      const card = btn.closest('.fav-item') || btn.closest('.fav-list-card');
+      if (card) {
+        card.style.opacity = '0';
+        card.style.transform = 'scale(0.9)';
+        card.style.transition = 'all 0.3s';
+        setTimeout(() => {
+          card.remove();
+          updateCount();
+          checkEmpty();
+        }, 300);
+        showToast('Removed from saved properties');
+      }
+    }
+
+    // Update count badge
+    function updateCount() {
+      const items = document.querySelectorAll('.fav-item:not([style*="display: none"])');
+      const total = document.querySelectorAll('.fav-item').length;
+      document.getElementById('favCount').textContent = `(${total})`;
+      document.getElementById('showCount').textContent = items.length;
+    }
+
+    // Check empty state
+    function checkEmpty() {
+      const items = document.querySelectorAll('.fav-item');
+      const empty = document.getElementById('emptyState');
+      if (items.length === 0) {
+        document.getElementById('gridView').style.display = 'none';
+        document.getElementById('listView').style.display = 'none';
+        empty.style.display = 'block';
+      }
+    }
+
+    // Clear All
+    function clearAll() {
+      if (!confirm('Remove all saved properties?')) return;
+      document.querySelectorAll('.fav-item').forEach(c => c.remove());
+      checkEmpty();
+      showToast('All saved properties cleared');
+    }
+
+    // Filter by status
+    function filterFavs(status, btn) {
+      document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+      const items = document.querySelectorAll('.fav-item');
+      let visible = 0;
+      items.forEach(item => {
+        if (status === 'all' || item.dataset.status === status) {
+          item.style.display = '';
+          visible++;
+        } else {
+          item.style.display = 'none';
+        }
+      });
+      document.getElementById('showCount').textContent = visible;
+    }
+
+    // Sort
+    function sortFavs(by) {
+      const grid = document.getElementById('gridView');
+      const items = Array.from(document.querySelectorAll('.fav-item'));
+      items.sort((a, b) => {
+        const ap = parseInt(a.dataset.price);
+        const bp = parseInt(b.dataset.price);
+        if (by === 'price-low')  return ap - bp;
+        if (by === 'price-high') return bp - ap;
+        return 0;
+      });
+      items.forEach(i => grid.appendChild(i));
+    }
+
+    // Switch View
+    function switchView(view) {
+      const gridView = document.getElementById('gridView');
+      const listView = document.getElementById('listView');
+      const gridBtn = document.getElementById('gridBtn');
+      const listBtn = document.getElementById('listBtn');
+
+      if (view === 'grid') {
+        gridView.style.display = 'flex'; gridView.className = 'row g-4';
+        listView.style.display = 'none';
+        gridBtn.classList.add('active'); listBtn.classList.remove('active');
+      } else {
+        gridView.style.display = 'none';
+        listView.style.display = 'block';
+        listBtn.classList.add('active'); gridBtn.classList.remove('active');
+
+        // Build list view from grid cards
+        listView.innerHTML = '';
+        document.querySelectorAll('.fav-item').forEach(item => {
+          const title = item.querySelector('.fav-card-title').textContent;
+          const loc   = item.querySelector('.fav-card-loc').textContent.trim();
+          const price = item.querySelector('.fav-card-price').textContent;
+          const img   = item.querySelector('.fav-card-img img').src;
+          const stats = item.querySelector('.fav-card-stats').innerHTML;
+          const status= item.dataset.status;
+
+          const el = document.createElement('div');
+          el.className = 'fav-list-card fav-item';
+          el.dataset.status = status;
+          el.dataset.price = item.dataset.price;
+          el.innerHTML = `
+            <img class="fav-list-img" src="${img}" alt="${title}">
+            <div class="fav-list-body">
+              <div>
+                <div class="fav-list-title">${title}</div>
+                <div class="fav-list-meta"><i class="bi bi-geo-alt-fill" style="color:var(--primary);"></i> ${loc}</div>
+                <div class="fav-list-price">${price}</div>
+              </div>
+              <div class="fav-list-actions">
+                <a href="property-detail.html" class="btn-fav-view"><i class="bi bi-eye"></i> View Details</a>
+                <button class="btn-fav-compare"><i class="bi bi-bar-chart-line"></i> Compare</button>
+                <button class="btn-clear-all" style="padding:7px 14px;" onclick="removeFav(this)"><i class="bi bi-heart-fill me-1"></i>Remove</button>
+              </div>
+            </div>`;
+          listView.appendChild(el);
+        });
+      }
+    }
+  </script>
+</body>
+</html>

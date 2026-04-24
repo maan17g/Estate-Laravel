@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The 2025 US Real Estate Market - Dream Home Blog</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ── ARTICLE HERO ── */
+    .article-hero {
+      position: relative; min-height: 55vh;
+      display: flex; flex-direction: column;
+    }
+    .article-hero-bg {
+      position: absolute; inset: 0;
+      background-image: url('https://images.unsplash.com/photo-1560520653-9e0e4c89eb11?auto=format&fit=crop&w=1600&q=80');
+      background-size: cover; background-position: center; z-index: -2;
+    }
+    .article-hero-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.45) 100%);
+      z-index: -1;
+    }
+    .article-hero-content {
+      flex: 1; display: flex; align-items: flex-end;
+      padding: 5rem 0 3rem;
+    }
+    .article-cat-badge {
+      display: inline-block; background: var(--primary); color: #fff;
+      padding: 5px 16px; border-radius: 6px;
+      font-size: 0.72rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem;
+    }
+    .article-title {
+      font-size: clamp(1.6rem, 4vw, 2.6rem);
+      font-weight: 700; color: #fff; line-height: 1.25;
+      margin-bottom: 1rem; max-width: 800px;
+    }
+    .article-meta-row {
+      display: flex; align-items: center; gap: 1.5rem;
+      flex-wrap: wrap; margin-bottom: 1rem;
+    }
+    .article-author-hero { display: flex; align-items: center; gap: 10px; }
+    .article-author-hero img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); }
+    .article-author-hero strong { display: block; font-size: 0.88rem; color: #fff; }
+    .article-author-hero span { font-size: 0.75rem; color: rgba(255,255,255,0.65); }
+    .article-meta-item { font-size: 0.8rem; color: rgba(255,255,255,0.75); display: flex; align-items: center; gap: 5px; }
+
+    /* ── BREADCRUMB ── */
+    .article-breadcrumb {
+      background: var(--form-bg); border-bottom: 1px solid var(--border-color);
+      padding: 0.75rem 0; font-size: 0.82rem;
+    }
+    .breadcrumb { margin: 0; }
+    .breadcrumb-item a { color: var(--primary); text-decoration: none; }
+    .breadcrumb-item.active { color: var(--text-muted); }
+    .breadcrumb-item + .breadcrumb-item::before { color: var(--text-muted); }
+
+    /* ── ARTICLE LAYOUT ── */
+    .article-section { padding: 3rem 0 5rem; }
+
+    /* ── ARTICLE BODY ── */
+    .article-body { max-width: 720px; }
+    .article-lead {
+      font-size: 1.1rem; color: var(--text-main);
+      line-height: 1.85; font-weight: 400;
+      border-left: 3px solid var(--primary);
+      padding-left: 1.25rem; margin-bottom: 2rem;
+    }
+    .article-body p {
+      font-size: 0.95rem; color: var(--text-muted);
+      line-height: 1.9; margin-bottom: 1.5rem;
+    }
+    .article-body h2 {
+      font-size: 1.4rem; font-weight: 700;
+      color: var(--text-main); margin: 2.5rem 0 1rem;
+    }
+    .article-body h3 {
+      font-size: 1.1rem; font-weight: 700;
+      color: var(--text-main); margin: 2rem 0 0.75rem;
+    }
+    .article-body ul, .article-body ol {
+      color: var(--text-muted); font-size: 0.95rem;
+      line-height: 2; padding-left: 1.5rem; margin-bottom: 1.5rem;
+    }
+    .article-body li::marker { color: var(--primary); }
+    .article-quote {
+      background: rgba(60,181,124,0.08); border: 1px solid rgba(60,181,124,0.25);
+      border-left: 4px solid var(--primary);
+      border-radius: 0 12px 12px 0;
+      padding: 1.5rem 1.75rem; margin: 2rem 0;
+      font-size: 1.05rem; color: var(--text-main);
+      font-style: italic; line-height: 1.75;
+    }
+    .article-quote cite { display: block; font-size: 0.8rem; color: var(--primary); margin-top: 0.5rem; font-style: normal; font-weight: 600; }
+
+    .article-img-block { margin: 2rem 0; border-radius: 16px; overflow: hidden; }
+    .article-img-block img { width: 100%; object-fit: cover; }
+    .article-img-caption { font-size: 0.78rem; color: var(--text-muted); text-align: center; margin-top: 0.5rem; }
+
+    /* Key stats block */
+    .key-stats-block {
+      display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem;
+      margin: 2rem 0;
+    }
+    .key-stat-item {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: 14px; padding: 1.25rem; text-align: center;
+    }
+    .key-stat-num { font-size: 1.8rem; font-weight: 700; color: var(--primary); line-height: 1; }
+    .key-stat-label { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; }
+
+    /* Share bar */
+    .article-share {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 1.25rem; background: var(--bg-card);
+      border: 1px solid var(--border-color); border-radius: 14px;
+      margin: 2.5rem 0; flex-wrap: wrap;
+    }
+    .article-share span { font-size: 0.85rem; font-weight: 600; color: var(--text-main); }
+    .share-btn-article {
+      width: 38px; height: 38px; border-radius: 10px;
+      border: 1px solid var(--border-color); background: transparent;
+      color: var(--text-muted); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.9rem; transition: all 0.2s;
+    }
+    .share-btn-article:hover { background: var(--primary); border-color: var(--primary); color: #fff; }
+    .article-like-btn {
+      margin-left: auto; background: transparent;
+      border: 1px solid var(--border-color); color: var(--text-muted);
+      padding: 7px 18px; border-radius: 8px; font-size: 0.82rem; font-weight: 600;
+      cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px;
+    }
+    .article-like-btn:hover, .article-like-btn.liked { border-color: #e74c3c; color: #e74c3c; background: rgba(231,76,60,0.07); }
+
+    /* Tags */
+    .article-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; margin: 1.5rem 0; }
+    .article-tag {
+      padding: 5px 14px; border-radius: 20px;
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      font-size: 0.78rem; color: var(--text-muted);
+      transition: all 0.2s; cursor: pointer;
+    }
+    .article-tag:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* Author Card */
+    .author-card {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: 20px; padding: 2rem; display: flex; gap: 1.5rem;
+      align-items: flex-start; margin: 2.5rem 0;
+    }
+    .author-card img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary); flex-shrink: 0; }
+    .author-card-name { font-size: 1.05rem; font-weight: 700; color: var(--text-main); margin-bottom: 2px; }
+    .author-card-role { font-size: 0.8rem; color: var(--primary); font-weight: 600; margin-bottom: 0.6rem; }
+    .author-card-bio { font-size: 0.85rem; color: var(--text-muted); line-height: 1.75; margin-bottom: 0.75rem; }
+    .author-socials { display: flex; gap: 0.5rem; }
+    .author-social-btn { width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border-color); background: transparent; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; transition: all 0.2s; text-decoration: none; }
+    .author-social-btn:hover { background: var(--primary); border-color: var(--primary); color: #fff; }
+
+    /* Comments */
+    .comments-section { margin-top: 3rem; }
+    .comment-item { display: flex; gap: 1rem; margin-bottom: 1.75rem; }
+    .comment-avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; flex-shrink: 0; border: 2px solid var(--border-color); }
+    .comment-bubble { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; padding: 1rem 1.25rem; flex: 1; }
+    .comment-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.5rem; }
+    .comment-name { font-weight: 700; font-size: 0.88rem; color: var(--text-main); }
+    .comment-date { font-size: 0.74rem; color: var(--text-muted); }
+    .comment-text { font-size: 0.85rem; color: var(--text-muted); line-height: 1.7; margin-bottom: 0.5rem; }
+    .comment-reply { background: none; border: none; font-size: 0.75rem; color: var(--primary); cursor: pointer; font-weight: 600; padding: 0; }
+
+    .comment-form-wrap { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 1.5rem; margin-top: 2rem; }
+    .comment-form-wrap h5 { font-weight: 700; margin-bottom: 1.25rem; font-size: 1rem; }
+
+    /* Progress bar reading */
+    .reading-progress {
+      position: fixed; top: 70px; left: 0; right: 0;
+      height: 3px; background: var(--border-color); z-index: 999;
+    }
+    .reading-progress-fill { height: 100%; background: var(--primary); width: 0; transition: width 0.1s linear; }
+
+    /* TOC Sidebar Widget */
+    .toc-widget {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem;
+      position: sticky; top: 90px;
+    }
+    .toc-title { font-size: 0.9rem; font-weight: 700; color: var(--text-main); margin-bottom: 1rem; display: flex; align-items: center; gap: 7px; }
+    .toc-title i { color: var(--primary); }
+    .toc-list { list-style: none; padding: 0; margin: 0; }
+    .toc-list li { margin-bottom: 0.55rem; }
+    .toc-list a { font-size: 0.82rem; color: var(--text-muted); text-decoration: none; display: flex; align-items: center; gap: 7px; transition: color 0.2s; }
+    .toc-list a::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--border-color); flex-shrink: 0; transition: background 0.2s; }
+    .toc-list a:hover, .toc-list a.active { color: var(--primary); }
+    .toc-list a:hover::before, .toc-list a.active::before { background: var(--primary); }
+
+    /* Related posts widget */
+    .related-widget { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; }
+    .related-post { display: flex; gap: 10px; margin-bottom: 1rem; cursor: pointer; text-decoration: none; }
+    .related-post:last-child { margin-bottom: 0; }
+    .related-post img { width: 64px; height: 54px; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
+    .related-post-title { font-size: 0.82rem; font-weight: 600; color: var(--text-main); line-height: 1.4; }
+    .related-post-meta { font-size: 0.72rem; color: var(--text-muted); margin-top: 3px; }
+
+    @media (max-width: 768px) {
+      .key-stats-block { grid-template-columns: 1fr 1fr; }
+      .author-card { flex-direction: column; }
+    }
+    @media (max-width: 576px) {
+      .key-stats-block { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body data-theme="dark">
+
+  <!-- Reading Progress Bar -->
+  <div class="reading-progress"><div class="reading-progress-fill" id="readingBar"></div></div>
+
+  <!-- NAVBAR -->
+  <header>
+    <nav class="navbar navbar-expand-lg fixed-top" id="navbar">
+      <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="index.html">
+          <i class="bi bi-house-door-fill"></i> Real Estate
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navContent">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navContent">
+          <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-lg-4">
+            <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="property.html">Properties</a></li>
+            <li class="nav-item"><a class="nav-link" href="about.html">About Us</a></li>
+            <li class="nav-item"><a class="nav-link active" href="blog.html">Blog</a></li>
+            <li class="nav-item"><a class="nav-link" href="contact-us.html">Contact</a></li>
+          </ul>
+          <div class="d-flex align-items-center gap-3 flex-column flex-lg-row mt-3 mt-lg-0">
+            <button class="theme-toggle-btn" id="themeToggle"><i class="bi bi-sun-fill"></i></button>
+            <a href="login.html" class="nav-link fw-bold">Login</a>
+            <a href="#" class="btn btn-consult shadow-sm"><i class="bi bi-telephone me-2"></i> Consult</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- ARTICLE HERO -->
+  <section class="article-hero">
+    <div class="article-hero-bg"></div>
+    <div class="article-hero-overlay"></div>
+    <div class="container article-hero-content">
+      <div class="col-lg-9">
+        <span class="article-cat-badge">Market Trends</span>
+        <h1 class="article-title">The 2025 US Real Estate Market: What Every Buyer Needs to Know Right Now</h1>
+        <div class="article-meta-row">
+          <div class="article-author-hero">
+            <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=80&q=80" alt="James Carter">
+            <div>
+              <strong>James Carter</strong>
+              <span>CEO & Senior Real Estate Expert</span>
+            </div>
+          </div>
+          <div class="article-meta-item"><i class="bi bi-calendar3"></i> March 15, 2025</div>
+          <div class="article-meta-item"><i class="bi bi-clock"></i> 8 min read</div>
+          <div class="article-meta-item"><i class="bi bi-eye"></i> 4,320 views</div>
+          <div class="article-meta-item"><i class="bi bi-chat-dots"></i> 24 comments</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BREADCRUMB -->
+  <div class="article-breadcrumb">
+    <div class="container">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+          <li class="breadcrumb-item"><a href="blog.html">Blog</a></li>
+          <li class="breadcrumb-item active">2025 US Real Estate Market</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <!-- ARTICLE CONTENT -->
+  <section class="article-section">
+    <div class="container">
+      <div class="row g-5">
+
+        <!-- ARTICLE BODY -->
+        <div class="col-lg-8">
+          <div class="article-body">
+
+            <p class="article-lead">
+              With interest rates shifting and housing inventory at near-historic lows, 2025 is shaping up to be one of the most complex years for real estate buyers and sellers in recent memory. Here's what the data tells us — and what it means for your next move.
+            </p>
+
+            <!-- Key Stats -->
+            <div class="key-stats-block">
+              <div class="key-stat-item">
+                <div class="key-stat-num">+7.2%</div>
+                <div class="key-stat-label">Median Home Price YoY</div>
+              </div>
+              <div class="key-stat-item">
+                <div class="key-stat-num">3.1M</div>
+                <div class="key-stat-label">Active Listings Nationwide</div>
+              </div>
+              <div class="key-stat-item">
+                <div class="key-stat-num">6.4%</div>
+                <div class="key-stat-label">Avg. 30-Year Mortgage Rate</div>
+              </div>
+            </div>
+
+            <h2 id="section1">Why Inventory Is Still the Biggest Problem</h2>
+            <p>The fundamental issue driving everything else in the 2025 housing market is supply. The United States is facing a structural shortage of homes that has been building for over a decade. New construction starts have consistently fallen short of demand since the 2008 financial crisis, and that gap has never been properly closed.</p>
+            <p>In major metropolitan areas like New York, Los Angeles, and San Francisco, zoning restrictions continue to limit the construction of new multi-family housing. Meanwhile, existing homeowners who locked in historically low mortgage rates between 2020 and 2022 are reluctant to sell — a phenomenon economists are calling the "lock-in effect." These homeowners face a significant rate penalty if they move, which keeps even more inventory off the market.</p>
+
+            <div class="article-quote">
+              "We're not just dealing with a short-term supply problem — we're dealing with the compounding effects of fifteen years of underbuilding in a country that added 30 million new households over the same period."
+              <cite>— National Association of Realtors, Q1 2025 Report</cite>
+            </div>
+
+            <h2 id="section2">Where Prices Are Heading</h2>
+            <p>Despite the affordability challenges, prices in most markets are not falling — and in many high-demand areas, they continue to climb. The Sun Belt markets remain particularly competitive, with cities like Austin, Dallas, Nashville, and Miami seeing continued inbound migration and job creation that sustains demand even at elevated price points.</p>
+
+            <div class="article-img-block">
+              <img src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=900&q=80" alt="Market Chart" style="height:320px;object-fit:cover;">
+              <div class="article-img-caption">Figure 1: Year-over-year home price appreciation by metro area, Q1 2025 (Source: Case-Shiller Index)</div>
+            </div>
+
+            <h2 id="section3">What Buyers Should Do Right Now</h2>
+            <p>If you are actively looking to buy in 2025, the first and most important thing you can do is get pre-approved for a mortgage before you start touring properties. In today's market, sellers receive multiple offers on desirable properties within days of listing. A buyer without financing in place is immediately at a disadvantage.</p>
+
+            <h3>Three Practical Steps for Today's Buyers</h3>
+            <ul>
+              <li>Lock in your rate as soon as you have an accepted offer — rates can move by 0.25% in a single week</li>
+              <li>Expand your geographic search radius by even 10–15 miles — this can reduce purchase prices by 20–30% in many metro areas</li>
+              <li>Consider new construction — builders are currently offering rate buy-downs and incentives that are not available in the resale market</li>
+              <li>Work with an agent who has access to off-market or pre-market listings — a significant percentage of homes sell before they ever hit Zillow</li>
+            </ul>
+
+            <h2 id="section4">The Rental Market as an Alternative</h2>
+            <p>For buyers who find ownership out of reach at current prices and rates, the rental market in 2025 offers some relief. Rent growth has slowed significantly compared to the 2021–2022 spike, and new apartment supply in many cities has put modest downward pressure on rents. However, this is very market-specific — cities with tight zoning continue to see elevated rents.</p>
+
+            <h2 id="section5">Our Outlook for the Rest of 2025</h2>
+            <p>Dream Home's analysis team expects home prices to rise by an additional 4–6% nationally through the end of 2025, with rates potentially softening to the 5.8–6.2% range if the Federal Reserve proceeds with expected cuts in the second half of the year. For buyers who can act now, waiting may mean competing at higher prices with the same rate environment.</p>
+            <p>The bottom line is this: if you find a home that fits your budget and your life, 2025 is a reasonable time to buy. Time the market perfectly and you may save a few percentage points — but you also risk pricing yourself out entirely as inventory stays tight.</p>
+
+            <!-- Tags -->
+            <div class="article-tags">
+              <span class="article-tag">Real Estate 2025</span>
+              <span class="article-tag">Market Trends</span>
+              <span class="article-tag">Buying Guide</span>
+              <span class="article-tag">Mortgage Rates</span>
+              <span class="article-tag">Housing Market</span>
+              <span class="article-tag">Investment</span>
+            </div>
+
+            <!-- Share Bar -->
+            <div class="article-share">
+              <span>Share this article:</span>
+              <button class="share-btn-article" title="Facebook"><i class="fab fa-facebook-f"></i></button>
+              <button class="share-btn-article" title="Twitter"><i class="fab fa-x-twitter"></i></button>
+              <button class="share-btn-article" title="LinkedIn"><i class="fab fa-linkedin-in"></i></button>
+              <button class="share-btn-article" title="WhatsApp"><i class="fab fa-whatsapp"></i></button>
+              <button class="share-btn-article" title="Copy Link" onclick="copyArticleLink()"><i class="bi bi-link-45deg"></i></button>
+              <button class="article-like-btn" id="likeBtn" onclick="toggleLike()">
+                <i class="bi bi-heart" id="likeIcon"></i> <span id="likeCount">142</span> Likes
+              </button>
+            </div>
+
+            <!-- Author Card -->
+            <div class="author-card">
+              <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=200&q=80" alt="James Carter">
+              <div>
+                <div class="author-card-name">James Carter</div>
+                <div class="author-card-role">CEO & Senior Real Estate Analyst</div>
+                <p class="author-card-bio">James has 15+ years of experience in luxury and investment real estate across North America. He holds an MBA from UCLA Anderson School of Management and has been featured in Forbes, Bloomberg, and The Wall Street Journal for his market commentary.</p>
+                <div class="author-socials">
+                  <a href="#" class="author-social-btn"><i class="fab fa-linkedin-in"></i></a>
+                  <a href="#" class="author-social-btn"><i class="fab fa-x-twitter"></i></a>
+                  <a href="agent-profile.html" class="author-social-btn"><i class="bi bi-person-fill"></i></a>
+                </div>
+              </div>
+            </div>
+
+            <!-- COMMENTS -->
+            <div class="comments-section">
+              <h5 class="fw-bold mb-4"><i class="bi bi-chat-dots text-primary-custom me-2"></i>Comments (24)</h5>
+
+              <div class="comment-item">
+                <img class="comment-avatar" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=80&h=80&fit=crop" alt="Emily">
+                <div class="comment-bubble">
+                  <div class="comment-header">
+                    <span class="comment-name">Emily Robinson</span>
+                    <span class="comment-date">March 16, 2025 — 9:42 AM</span>
+                  </div>
+                  <p class="comment-text">This is exactly the kind of real talk I needed. I've been sitting on the fence for 6 months and this has helped me decide to move forward with my pre-approval this week. Thank you James!</p>
+                  <button class="comment-reply">↩ Reply</button>
+                </div>
+              </div>
+
+              <div class="comment-item">
+                <img class="comment-avatar" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=80&h=80&fit=crop" alt="Marcus">
+                <div class="comment-bubble">
+                  <div class="comment-header">
+                    <span class="comment-name">Marcus Thompson</span>
+                    <span class="comment-date">March 15, 2025 — 3:18 PM</span>
+                  </div>
+                  <p class="comment-text">The lock-in effect point is something I hadn't considered. It perfectly explains why my neighborhood has had literally 3 listings this entire year. Great data-driven breakdown.</p>
+                  <button class="comment-reply">↩ Reply</button>
+                </div>
+              </div>
+
+              <div class="comment-item">
+                <img class="comment-avatar" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=80&h=80&fit=crop" alt="User">
+                <div class="comment-bubble">
+                  <div class="comment-header">
+                    <span class="comment-name">Robert Chen</span>
+                    <span class="comment-date">March 15, 2025 — 11:05 AM</span>
+                  </div>
+                  <p class="comment-text">Question for James — do you think the Sun Belt markets can sustain these price levels if remote work starts to reverse? Asking because I'm deciding between Austin and Chicago.</p>
+                  <button class="comment-reply">↩ Reply</button>
+                </div>
+              </div>
+
+              <!-- Add Comment Form -->
+              <div class="comment-form-wrap">
+                <h5><i class="bi bi-pencil-square text-primary-custom me-2"></i>Leave a Comment</h5>
+                <form onsubmit="submitComment(event)">
+                  <div class="row g-3">
+                    <div class="col-md-6">
+                      <label class="form-label small">Name *</label>
+                      <input type="text" class="form-control" id="commentName" placeholder="Your name" required>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label small">Email *</label>
+                      <input type="email" class="form-control" id="commentEmail" placeholder="your@email.com" required>
+                    </div>
+                    <div class="col-12">
+                      <label class="form-label small">Comment *</label>
+                      <textarea class="form-control" id="commentText" rows="4" placeholder="Share your thoughts..." required></textarea>
+                    </div>
+                    <div class="col-12">
+                      <button type="submit" class="btn-search px-4">
+                        <i class="bi bi-send me-2"></i> Post Comment
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+          </div>
+        </div><!-- /article body -->
+
+        <!-- SIDEBAR -->
+        <div class="col-lg-4">
+
+          <!-- Table of Contents -->
+          <div class="toc-widget">
+            <div class="toc-title"><i class="bi bi-list-ol"></i> Table of Contents</div>
+            <ul class="toc-list">
+              <li><a href="#section1" class="toc-link">Why Inventory Is Still the Biggest Problem</a></li>
+              <li><a href="#section2" class="toc-link">Where Prices Are Heading</a></li>
+              <li><a href="#section3" class="toc-link">What Buyers Should Do Right Now</a></li>
+              <li><a href="#section4" class="toc-link">The Rental Market as an Alternative</a></li>
+              <li><a href="#section5" class="toc-link">Our Outlook for the Rest of 2025</a></li>
+            </ul>
+          </div>
+
+          <!-- Related Posts -->
+          <div class="related-widget">
+            <div class="toc-title" style="font-size:0.9rem;font-weight:700;margin-bottom:1rem;padding-bottom:0.6rem;border-bottom:2px solid var(--border-color);display:flex;align-items:center;gap:7px;">
+              <i class="bi bi-newspaper" style="color:var(--primary);"></i> Related Articles
+            </div>
+            <a href="blog-single.html" class="related-post">
+              <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=120&q=80" alt="">
+              <div>
+                <div class="related-post-title">10 Things First-Time Buyers Always Forget</div>
+                <div class="related-post-meta">Mar 10 &nbsp;·&nbsp; 6 min read</div>
+              </div>
+            </a>
+            <a href="blog-single.html" class="related-post">
+              <img src="https://images.unsplash.com/photo-1579621970795-87facc2f976d?auto=format&fit=crop&w=120&q=80" alt="">
+              <div>
+                <div class="related-post-title">5 US Cities With Best Real Estate ROI in 2025</div>
+                <div class="related-post-meta">Feb 28 &nbsp;·&nbsp; 9 min read</div>
+              </div>
+            </a>
+            <a href="blog-single.html" class="related-post">
+              <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=120&q=80" alt="">
+              <div>
+                <div class="related-post-title">The Complete Mortgage Guide for First-Time Buyers</div>
+                <div class="related-post-meta">Feb 22 &nbsp;·&nbsp; 4 min read</div>
+              </div>
+            </a>
+          </div>
+
+          <!-- CTA Card -->
+          <div style="background:linear-gradient(135deg,rgba(60,181,124,0.12),rgba(7,14,11,0.6));border:1px solid var(--border-color);border-radius:16px;padding:1.5rem;text-align:center;">
+            <i class="bi bi-house-door-fill" style="font-size:2rem;color:var(--primary);display:block;margin-bottom:0.75rem;"></i>
+            <h6 class="fw-bold mb-2">Ready to Buy Your Dream Home?</h6>
+            <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Browse our verified listings and connect with an expert agent today.</p>
+            <a href="property.html" class="btn btn-consult w-100 mb-2"><i class="bi bi-search me-2"></i>Browse Properties</a>
+            <a href="contact-us.html" style="display:block;font-size:0.8rem;color:var(--primary);text-decoration:none;margin-top:0.5rem;">Get a Free Consultation →</a>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="row g-5">
+        <div class="col-lg-4 col-md-6">
+          <a href="index.html" class="footer-brand"><i class="bi bi-house-door-fill"></i> Real Estate</a>
+          <p class="footer-tagline">Building places you're proud to call home — today, tomorrow, and for every milestone in between.</p>
+          <p class="footer-heading mb-2">Stay Updated</p>
+          <div class="footer-newsletter">
+            <input type="email" class="form-control" placeholder="Your email address">
+            <button class="footer-newsletter-btn" type="button"><i class="bi bi-send-fill"></i></button>
+          </div>
+          <div class="footer-socials">
+            <a href="#" class="footer-social-icon"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="footer-social-icon"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="footer-social-icon"><i class="fab fa-x-twitter"></i></a>
+            <a href="#" class="footer-social-icon"><i class="fab fa-linkedin-in"></i></a>
+            <a href="#" class="footer-social-icon"><i class="fab fa-youtube"></i></a>
+          </div>
+        </div>
+        <div class="col-lg-2 col-md-3 col-6">
+          <h6 class="footer-heading">Quick Links</h6>
+          <ul class="footer-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="property.html">Properties</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="blog.html">Blog</a></li>
+            <li><a href="contact-us.html">Contact</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-2 col-md-3 col-6">
+          <h6 class="footer-heading">Blog Topics</h6>
+          <ul class="footer-links">
+            <li><a href="blog.html">Buying Guide</a></li>
+            <li><a href="blog.html">Selling Tips</a></li>
+            <li><a href="blog.html">Market Trends</a></li>
+            <li><a href="blog.html">Investing</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-4 col-md-6">
+          <h6 class="footer-heading">Contact Us</h6>
+          <div class="footer-contact-item"><i class="bi bi-geo-alt-fill"></i><div><strong>Our Office</strong>9876 Wilshire Blvd, Suite 500<br>Beverly Hills, CA 90210</div></div>
+          <div class="footer-contact-item"><i class="bi bi-telephone-fill"></i><div><strong>Phone</strong>(310) 555-0100</div></div>
+          <div class="footer-contact-item"><i class="bi bi-envelope-fill"></i><div><strong>Email</strong>info@dreamhome.com</div></div>
+        </div>
+      </div>
+      <hr class="footer-divider">
+      <div class="footer-bottom">
+        <p class="footer-copyright mb-0">&copy; 2025 <span>Dream Home</span>. All Rights Reserved.</p>
+        <div class="footer-bottom-links">
+          <a href="privacy-policy.html">Privacy Policy</a>
+          <a href="terms-conditions.html">Terms of Service</a>
+          <a href="sitemap.html">Sitemap</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast -->
+  <div id="toast" style="position:fixed;bottom:2rem;right:2rem;z-index:9999;background:var(--primary);color:#fff;padding:1rem 1.5rem;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,0.3);display:flex;align-items:center;gap:0.75rem;font-size:0.95rem;font-weight:500;transform:translateY(100px);opacity:0;transition:all 0.4s ease;font-family:var(--font-family);">
+    <i class="bi bi-check-circle-fill"></i> <span id="toastMsg">Done!</span>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Theme
+    document.getElementById('themeToggle').addEventListener('click', function() {
+      const body = document.body; const icon = this.querySelector('i');
+      if (body.getAttribute('data-theme') === 'dark') { body.setAttribute('data-theme', 'light'); icon.classList.replace('bi-sun-fill','bi-moon-fill'); }
+      else { body.setAttribute('data-theme', 'dark'); icon.classList.replace('bi-moon-fill','bi-sun-fill'); }
+    });
+    window.addEventListener('scroll', () => { document.getElementById('navbar').classList.toggle('nav-scroll', window.scrollY > 50); });
+
+    // Reading Progress Bar
+    window.addEventListener('scroll', () => {
+      const docHeight = document.body.scrollHeight - window.innerHeight;
+      const pct = (window.scrollY / docHeight) * 100;
+      document.getElementById('readingBar').style.width = pct + '%';
+    });
+
+    // Toast
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      document.getElementById('toastMsg').textContent = msg;
+      t.style.transform = 'translateY(0)'; t.style.opacity = '1';
+      setTimeout(() => { t.style.transform = 'translateY(100px)'; t.style.opacity = '0'; }, 3000);
+    }
+
+    // Like
+    let liked = false;
+    function toggleLike() {
+      liked = !liked;
+      const btn = document.getElementById('likeBtn');
+      const icon = document.getElementById('likeIcon');
+      const count = document.getElementById('likeCount');
+      if (liked) {
+        btn.classList.add('liked');
+        icon.className = 'bi bi-heart-fill';
+        count.textContent = '143';
+        showToast('You liked this article!');
+      } else {
+        btn.classList.remove('liked');
+        icon.className = 'bi bi-heart';
+        count.textContent = '142';
+      }
+    }
+
+    // Copy link
+    function copyArticleLink() { navigator.clipboard.writeText(window.location.href); showToast('Link copied to clipboard!'); }
+
+    // Submit comment
+    function submitComment(e) {
+      e.preventDefault();
+      const name = document.getElementById('commentName').value;
+      const text = document.getElementById('commentText').value;
+      const section = document.querySelector('.comments-section');
+      const form = document.querySelector('.comment-form-wrap');
+      const newComment = document.createElement('div');
+      newComment.className = 'comment-item';
+      newComment.innerHTML = `
+        <img class="comment-avatar" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=80&fit=crop" alt="${name}">
+        <div class="comment-bubble">
+          <div class="comment-header">
+            <span class="comment-name">${name}</span>
+            <span class="comment-date">Just now</span>
+          </div>
+          <p class="comment-text">${text}</p>
+          <button class="comment-reply">↩ Reply</button>
+        </div>`;
+      section.insertBefore(newComment, form);
+      document.getElementById('commentName').value = '';
+      document.getElementById('commentEmail').value = '';
+      document.getElementById('commentText').value = '';
+      showToast('Comment posted successfully!');
+    }
+  </script>
+</body>
+</html>

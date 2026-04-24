@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Dream Home</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { overflow-x: hidden; }
+
+    /* ── DASHBOARD LAYOUT ── */
+    .dashboard-wrapper {
+      display: flex;
+      min-height: 100vh;
+      padding-top: 70px;
+    }
+
+    /* ── SIDEBAR ── */
+    .dash-sidebar {
+      width: 260px;
+      flex-shrink: 0;
+      background: var(--form-bg);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 70px;
+      left: 0;
+      bottom: 0;
+      z-index: 100;
+      transition: transform 0.3s ease;
+      overflow-y: auto;
+    }
+
+    .dash-sidebar.collapsed { transform: translateX(-260px); }
+
+    .sidebar-user {
+      padding: 1.5rem 1.25rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .sidebar-avatar {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--primary);
+      flex-shrink: 0;
+    }
+    .sidebar-user-name { font-weight: 700; font-size: 0.95rem; color: var(--text-main); margin: 0; }
+    .sidebar-user-role { font-size: 0.75rem; color: var(--primary); }
+
+    .sidebar-nav { padding: 1rem 0; flex: 1; }
+    .sidebar-section-label {
+      font-size: 0.68rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 1.5px;
+      color: var(--text-muted); padding: 0.5rem 1.25rem 0.3rem;
+    }
+    .sidebar-link {
+      display: flex; align-items: center; gap: 12px;
+      padding: 0.7rem 1.25rem;
+      color: var(--text-muted); text-decoration: none;
+      font-size: 0.88rem; font-weight: 500;
+      transition: all 0.2s; border-left: 3px solid transparent;
+      position: relative;
+    }
+    .sidebar-link i { font-size: 1rem; width: 20px; text-align: center; }
+    .sidebar-link:hover { color: var(--text-main); background: rgba(60,181,124,0.05); }
+    .sidebar-link.active {
+      color: var(--primary);
+      background: rgba(60,181,124,0.1);
+      border-left-color: var(--primary);
+    }
+    .sidebar-badge {
+      margin-left: auto;
+      background: var(--primary); color: #fff;
+      font-size: 0.65rem; font-weight: 700;
+      padding: 2px 7px; border-radius: 20px;
+    }
+
+    .sidebar-logout {
+      padding: 1rem 1.25rem;
+      border-top: 1px solid var(--border-color);
+    }
+    .btn-logout {
+      display: flex; align-items: center; gap: 10px;
+      color: var(--text-muted); font-size: 0.85rem;
+      background: none; border: none; cursor: pointer;
+      padding: 0; transition: color 0.2s;
+    }
+    .btn-logout:hover { color: #e74c3c; }
+
+    /* ── MAIN CONTENT ── */
+    .dash-main {
+      flex: 1;
+      margin-left: 260px;
+      padding: 2rem;
+      background: var(--bg-body);
+      min-height: calc(100vh - 70px);
+      transition: margin-left 0.3s ease;
+    }
+    .dash-main.expanded { margin-left: 0; }
+
+    /* Top bar */
+    .dash-topbar {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap; gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .dash-greeting { font-size: 1.5rem; font-weight: 700; }
+    .dash-greeting span { color: var(--primary); }
+    .dash-greeting-sub { color: var(--text-muted); font-size: 0.88rem; margin-top: 2px; }
+
+    .sidebar-toggle-btn {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      color: var(--text-main); width: 38px; height: 38px;
+      border-radius: 8px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; transition: all 0.2s;
+    }
+    .sidebar-toggle-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* ── STAT CARDS ── */
+    .dash-stat-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .dash-stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px; padding: 1.25rem 1.5rem;
+      display: flex; align-items: center; gap: 1rem;
+      transition: all 0.3s;
+    }
+    .dash-stat-card:hover { transform: translateY(-4px); border-color: var(--primary); box-shadow: 0 8px 24px var(--shadow); }
+    .dash-stat-icon {
+      width: 52px; height: 52px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; flex-shrink: 0;
+    }
+    .dash-stat-icon.green { background: rgba(60,181,124,0.15); color: var(--primary); }
+    .dash-stat-icon.blue  { background: rgba(13,202,240,0.12); color: #0dcaf0; }
+    .dash-stat-icon.gold  { background: rgba(255,193,7,0.12); color: #ffc107; }
+    .dash-stat-icon.red   { background: rgba(231,76,60,0.12); color: #e74c3c; }
+    .dash-stat-num { font-size: 1.6rem; font-weight: 700; color: var(--text-main); line-height: 1; }
+    .dash-stat-label { font-size: 0.78rem; color: var(--text-muted); margin-top: 3px; }
+    .dash-stat-change { font-size: 0.72rem; margin-top: 4px; }
+    .dash-stat-change.up { color: var(--primary); }
+    .dash-stat-change.down { color: #e74c3c; }
+
+    /* ── SECTIONS ── */
+    .dash-section { margin-bottom: 2rem; }
+    .dash-section-header {
+      display: flex; justify-content: space-between;
+      align-items: center; margin-bottom: 1rem;
+    }
+    .dash-section-title { font-size: 1.05rem; font-weight: 700; color: var(--text-main); }
+    .dash-view-all {
+      font-size: 0.82rem; color: var(--primary);
+      text-decoration: none; font-weight: 600;
+    }
+    .dash-view-all:hover { text-decoration: underline; }
+
+    /* Saved Property Cards */
+    .dash-prop-card {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: 14px; overflow: hidden;
+      display: flex; gap: 0;
+      transition: all 0.25s;
+    }
+    .dash-prop-card:hover { border-color: var(--primary); transform: translateY(-2px); }
+    .dash-prop-img { width: 120px; height: 100px; object-fit: cover; flex-shrink: 0; }
+    .dash-prop-info { padding: 0.75rem 1rem; flex: 1; }
+    .dash-prop-title { font-weight: 700; font-size: 0.9rem; color: var(--text-main); margin-bottom: 2px; }
+    .dash-prop-loc { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 6px; }
+    .dash-prop-price { font-size: 0.95rem; font-weight: 700; color: var(--primary); }
+    .dash-prop-meta { font-size: 0.72rem; color: var(--text-muted); }
+    .dash-prop-actions { display: flex; flex-direction: column; justify-content: center; gap: 6px; padding: 0.75rem; }
+    .btn-dash-action {
+      width: 32px; height: 32px; border-radius: 8px;
+      border: 1px solid var(--border-color); background: transparent;
+      color: var(--text-muted); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem; transition: all 0.2s;
+    }
+    .btn-dash-action:hover { border-color: var(--primary); color: var(--primary); }
+    .btn-dash-action.remove:hover { border-color: #e74c3c; color: #e74c3c; }
+
+    /* Viewings Table */
+    .viewing-table { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; overflow: hidden; }
+    .viewing-row {
+      display: flex; align-items: center; gap: 1rem;
+      padding: 0.9rem 1.25rem; border-bottom: 1px solid var(--border-color);
+      transition: background 0.2s;
+    }
+    .viewing-row:last-child { border-bottom: none; }
+    .viewing-row:hover { background: rgba(60,181,124,0.04); }
+    .viewing-date-badge {
+      background: rgba(60,181,124,0.12); color: var(--primary);
+      border: 1px solid rgba(60,181,124,0.3);
+      border-radius: 10px; padding: 6px 10px;
+      text-align: center; min-width: 52px; flex-shrink: 0;
+    }
+    .viewing-date-badge .day { font-size: 1.2rem; font-weight: 700; line-height: 1; }
+    .viewing-date-badge .month { font-size: 0.65rem; text-transform: uppercase; }
+    .viewing-info { flex: 1; }
+    .viewing-title { font-size: 0.9rem; font-weight: 600; color: var(--text-main); margin-bottom: 2px; }
+    .viewing-sub { font-size: 0.75rem; color: var(--text-muted); }
+    .viewing-time { font-size: 0.8rem; color: var(--text-muted); white-space: nowrap; }
+    .viewing-status { font-size: 0.72rem; font-weight: 600; padding: 3px 10px; border-radius: 20px; white-space: nowrap; }
+    .status-confirmed { background: rgba(60,181,124,0.12); color: var(--primary); }
+    .status-pending { background: rgba(255,193,7,0.12); color: #ffc107; }
+
+    /* Activity Feed */
+    .activity-feed { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; overflow: hidden; }
+    .activity-item {
+      display: flex; gap: 12px; padding: 0.9rem 1.25rem;
+      border-bottom: 1px solid var(--border-color); align-items: flex-start;
+    }
+    .activity-item:last-child { border-bottom: none; }
+    .activity-dot {
+      width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem;
+    }
+    .activity-dot.green { background: rgba(60,181,124,0.15); color: var(--primary); }
+    .activity-dot.blue  { background: rgba(13,202,240,0.12); color: #0dcaf0; }
+    .activity-dot.gold  { background: rgba(255,193,7,0.12); color: #ffc107; }
+    .activity-text { font-size: 0.85rem; color: var(--text-main); line-height: 1.5; }
+    .activity-time { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; }
+
+    /* Profile Completion */
+    .profile-complete-card {
+      background: linear-gradient(135deg, rgba(60,181,124,0.12), rgba(7,14,11,0.5));
+      border: 1px solid var(--border-color); border-radius: 16px; padding: 1.5rem;
+    }
+    .profile-complete-bar { height: 8px; background: var(--border-color); border-radius: 8px; overflow: hidden; margin: 0.75rem 0; }
+    .profile-complete-fill { height: 100%; background: var(--primary); border-radius: 8px; width: 65%; transition: width 0.5s ease; }
+    .profile-task { display: flex; align-items: center; gap: 10px; margin-bottom: 0.6rem; font-size: 0.83rem; color: var(--text-muted); }
+    .profile-task i { font-size: 0.9rem; }
+    .profile-task.done { color: var(--primary); }
+
+    /* Responsive */
+    @media (max-width: 1200px) {
+      .dash-stat-grid { grid-template-columns: repeat(2,1fr); }
+    }
+    @media (max-width: 991px) {
+      .dash-sidebar { transform: translateX(-260px); }
+      .dash-sidebar.open { transform: translateX(0); }
+      .dash-main { margin-left: 0; }
+    }
+    @media (max-width: 576px) {
+      .dash-stat-grid { grid-template-columns: 1fr 1fr; }
+      .dash-main { padding: 1rem; }
+      .dash-prop-img { width: 90px; height: 80px; }
+    }
+  </style>
+</head>
+<body data-theme="dark">
+
+  <!-- NAVBAR -->
+  <header>
+    <nav class="navbar navbar-expand-lg fixed-top" id="navbar">
+      <div class="container-fluid px-3">
+        <a class="navbar-brand d-flex align-items-center" href="index.html">
+          <i class="bi bi-house-door-fill"></i> Real Estate
+        </a>
+        <div class="d-flex align-items-center gap-3 ms-auto">
+          <button class="theme-toggle-btn" id="themeToggle" title="Toggle Theme">
+            <i class="bi bi-sun-fill"></i>
+          </button>
+          <!-- Notification Bell -->
+          <button class="theme-toggle-btn position-relative" title="Notifications">
+            <i class="bi bi-bell"></i>
+            <span style="position:absolute;top:6px;right:6px;width:8px;height:8px;background:#e74c3c;border-radius:50%;border:1px solid var(--bg-body);"></span>
+          </button>
+          <!-- User Avatar -->
+          <div class="dropdown">
+            <button class="d-flex align-items-center gap-2 bg-transparent border-0 cursor-pointer" data-bs-toggle="dropdown">
+              <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=80&h=80&fit=crop" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid var(--primary);" alt="User">
+              <span style="font-size:0.85rem;color:var(--text-main);font-weight:600;" class="d-none d-md-block">John Smith</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" style="background:var(--form-bg);border:1px solid var(--border-color);">
+              <li><a class="dropdown-item" href="dashboard.html" style="color:var(--text-main);font-size:0.85rem;"><i class="bi bi-speedometer2 me-2" style="color:var(--primary);"></i>Dashboard</a></li>
+              <li><a class="dropdown-item" href="favorites.html" style="color:var(--text-main);font-size:0.85rem;"><i class="bi bi-heart me-2" style="color:var(--primary);"></i>Favorites</a></li>
+              <li><hr class="dropdown-divider" style="border-color:var(--border-color);"></li>
+              <li><a class="dropdown-item" href="login.html" style="color:#e74c3c;font-size:0.85rem;"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <div class="dashboard-wrapper">
+
+    <!-- SIDEBAR -->
+    <aside class="dash-sidebar" id="dashSidebar">
+      <div class="sidebar-user">
+        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=80&h=80&fit=crop" class="sidebar-avatar" alt="User">
+        <div>
+          <p class="sidebar-user-name">John Smith</p>
+          <span class="sidebar-user-role">Property Buyer</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="sidebar-section-label">Main</div>
+        <a href="dashboard.html" class="sidebar-link active"><i class="bi bi-speedometer2"></i> Dashboard</a>
+        <a href="favorites.html" class="sidebar-link"><i class="bi bi-heart"></i> Saved Properties <span class="sidebar-badge">12</span></a>
+        <a href="property.html" class="sidebar-link"><i class="bi bi-search"></i> Browse Listings</a>
+        <a href="#" class="sidebar-link"><i class="bi bi-calendar-check"></i> My Viewings <span class="sidebar-badge">3</span></a>
+
+        <div class="sidebar-section-label mt-2">Account</div>
+        <a href="#" class="sidebar-link"><i class="bi bi-person"></i> My Profile</a>
+        <a href="#" class="sidebar-link"><i class="bi bi-bell"></i> Alerts <span class="sidebar-badge">5</span></a>
+        <a href="#" class="sidebar-link"><i class="bi bi-chat-dots"></i> Messages <span class="sidebar-badge">2</span></a>
+        <a href="#" class="sidebar-link"><i class="bi bi-gear"></i> Settings</a>
+
+        <div class="sidebar-section-label mt-2">Resources</div>
+        <a href="blog.html" class="sidebar-link"><i class="bi bi-journal-text"></i> Market Blog</a>
+        <a href="contact-us.html" class="sidebar-link"><i class="bi bi-headset"></i> Support</a>
+      </nav>
+
+      <div class="sidebar-logout">
+        <button class="btn-logout" onclick="window.location.href='login.html'">
+          <i class="bi bi-box-arrow-left"></i> Sign Out
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="dash-main" id="dashMain">
+
+      <!-- Top bar -->
+      <div class="dash-topbar">
+        <div class="d-flex align-items-center gap-3">
+          <button class="sidebar-toggle-btn" onclick="toggleSidebar()" title="Toggle Sidebar">
+            <i class="bi bi-layout-sidebar"></i>
+          </button>
+          <div>
+            <div class="dash-greeting">Good morning, <span>John</span> 👋</div>
+            <div class="dash-greeting-sub">Wednesday, 19 March 2025 — Beverly Hills, CA</div>
+          </div>
+        </div>
+        <a href="property.html" class="btn btn-consult shadow-sm">
+          <i class="bi bi-plus-lg me-2"></i> Browse Properties
+        </a>
+      </div>
+
+      <!-- STAT CARDS -->
+      <div class="dash-stat-grid">
+        <div class="dash-stat-card">
+          <div class="dash-stat-icon green"><i class="bi bi-heart-fill"></i></div>
+          <div>
+            <div class="dash-stat-num">12</div>
+            <div class="dash-stat-label">Saved Properties</div>
+            <div class="dash-stat-change up"><i class="bi bi-arrow-up-short"></i> +3 this week</div>
+          </div>
+        </div>
+        <div class="dash-stat-card">
+          <div class="dash-stat-icon blue"><i class="bi bi-calendar-check"></i></div>
+          <div>
+            <div class="dash-stat-num">3</div>
+            <div class="dash-stat-label">Upcoming Viewings</div>
+            <div class="dash-stat-change up"><i class="bi bi-arrow-up-short"></i> Next: Mon 24</div>
+          </div>
+        </div>
+        <div class="dash-stat-card">
+          <div class="dash-stat-icon gold"><i class="bi bi-bell-fill"></i></div>
+          <div>
+            <div class="dash-stat-num">5</div>
+            <div class="dash-stat-label">Property Alerts</div>
+            <div class="dash-stat-change up"><i class="bi bi-arrow-up-short"></i> 2 new matches</div>
+          </div>
+        </div>
+        <div class="dash-stat-card">
+          <div class="dash-stat-icon red"><i class="bi bi-chat-dots-fill"></i></div>
+          <div>
+            <div class="dash-stat-num">2</div>
+            <div class="dash-stat-label">New Messages</div>
+            <div class="dash-stat-change down"><i class="bi bi-dot"></i> From agents</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-4">
+
+        <!-- LEFT: Saved + Viewings -->
+        <div class="col-xl-8">
+
+          <!-- Saved Properties -->
+          <div class="dash-section">
+            <div class="dash-section-header">
+              <span class="dash-section-title"><i class="bi bi-heart-fill text-primary-custom me-2"></i>Recently Saved</span>
+              <a href="favorites.html" class="dash-view-all">View All 12 →</a>
+            </div>
+            <div class="d-flex flex-column gap-2">
+
+              <div class="dash-prop-card">
+                <img class="dash-prop-img" src="https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=300&q=80" alt="Villa">
+                <div class="dash-prop-info">
+                  <div class="dash-prop-title">Modern Luxury Villa</div>
+                  <div class="dash-prop-loc"><i class="bi bi-geo-alt-fill" style="color:var(--primary);"></i> Beverly Hills, CA</div>
+                  <div class="dash-prop-price">$850,000</div>
+                  <div class="dash-prop-meta">5 Beds &nbsp;·&nbsp; 4 Baths &nbsp;·&nbsp; 4,500 sqft</div>
+                </div>
+                <div class="dash-prop-actions">
+                  <a href="property-detail.html" class="btn-dash-action" title="View"><i class="bi bi-eye"></i></a>
+                  <button class="btn-dash-action remove" title="Remove" onclick="removeCard(this)"><i class="bi bi-heart-fill" style="color:#e74c3c;"></i></button>
+                </div>
+              </div>
+
+              <div class="dash-prop-card">
+                <img class="dash-prop-img" src="https://images.unsplash.com/photo-1572120360610-d971b9d7767c?auto=format&fit=crop&w=300&q=80" alt="Penthouse">
+                <div class="dash-prop-info">
+                  <div class="dash-prop-title">Ocean View Penthouse</div>
+                  <div class="dash-prop-loc"><i class="bi bi-geo-alt-fill" style="color:var(--primary);"></i> Miami, FL</div>
+                  <div class="dash-prop-price">$2,100,000</div>
+                  <div class="dash-prop-meta">3 Beds &nbsp;·&nbsp; 4 Baths &nbsp;·&nbsp; 3,200 sqft</div>
+                </div>
+                <div class="dash-prop-actions">
+                  <a href="property-detail.html" class="btn-dash-action" title="View"><i class="bi bi-eye"></i></a>
+                  <button class="btn-dash-action remove" title="Remove" onclick="removeCard(this)"><i class="bi bi-heart-fill" style="color:#e74c3c;"></i></button>
+                </div>
+              </div>
+
+              <div class="dash-prop-card">
+                <img class="dash-prop-img" src="https://images.unsplash.com/photo-1600047509358-9dc75507daeb?auto=format&fit=crop&w=300&q=80" alt="Estate">
+                <div class="dash-prop-info">
+                  <div class="dash-prop-title">Waterfront Estate</div>
+                  <div class="dash-prop-loc"><i class="bi bi-geo-alt-fill" style="color:var(--primary);"></i> Malibu, CA</div>
+                  <div class="dash-prop-price">$3,500,000</div>
+                  <div class="dash-prop-meta">6 Beds &nbsp;·&nbsp; 5 Baths &nbsp;·&nbsp; 6,200 sqft</div>
+                </div>
+                <div class="dash-prop-actions">
+                  <a href="property-detail.html" class="btn-dash-action" title="View"><i class="bi bi-eye"></i></a>
+                  <button class="btn-dash-action remove" title="Remove" onclick="removeCard(this)"><i class="bi bi-heart-fill" style="color:#e74c3c;"></i></button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Upcoming Viewings -->
+          <div class="dash-section">
+            <div class="dash-section-header">
+              <span class="dash-section-title"><i class="bi bi-calendar-check text-primary-custom me-2"></i>Upcoming Viewings</span>
+              <a href="#" class="dash-view-all">Manage All →</a>
+            </div>
+            <div class="viewing-table">
+
+              <div class="viewing-row">
+                <div class="viewing-date-badge">
+                  <div class="day">24</div>
+                  <div class="month">Mar</div>
+                </div>
+                <div class="viewing-info">
+                  <div class="viewing-title">Modern Luxury Villa</div>
+                  <div class="viewing-sub"><i class="bi bi-geo-alt-fill" style="color:var(--primary);font-size:0.7rem;"></i> Beverly Hills, CA &nbsp;·&nbsp; Agent: James Carter</div>
+                </div>
+                <div class="viewing-time"><i class="bi bi-clock me-1"></i>10:00 AM</div>
+                <span class="viewing-status status-confirmed">Confirmed</span>
+              </div>
+
+              <div class="viewing-row">
+                <div class="viewing-date-badge">
+                  <div class="day">26</div>
+                  <div class="month">Mar</div>
+                </div>
+                <div class="viewing-info">
+                  <div class="viewing-title">Ocean View Penthouse</div>
+                  <div class="viewing-sub"><i class="bi bi-geo-alt-fill" style="color:var(--primary);font-size:0.7rem;"></i> Miami, FL &nbsp;·&nbsp; Agent: Sarah Mitchell</div>
+                </div>
+                <div class="viewing-time"><i class="bi bi-clock me-1"></i>2:00 PM</div>
+                <span class="viewing-status status-pending">Pending</span>
+              </div>
+
+              <div class="viewing-row">
+                <div class="viewing-date-badge">
+                  <div class="day">29</div>
+                  <div class="month">Mar</div>
+                </div>
+                <div class="viewing-info">
+                  <div class="viewing-title">Downtown Loft</div>
+                  <div class="viewing-sub"><i class="bi bi-geo-alt-fill" style="color:var(--primary);font-size:0.7rem;"></i> Chicago, IL &nbsp;·&nbsp; Agent: David Okafor</div>
+                </div>
+                <div class="viewing-time"><i class="bi bi-clock me-1"></i>11:30 AM</div>
+                <span class="viewing-status status-confirmed">Confirmed</span>
+              </div>
+
+            </div>
+          </div>
+
+        </div><!-- /col-xl-8 -->
+
+        <!-- RIGHT: Activity + Profile -->
+        <div class="col-xl-4">
+
+          <!-- Profile Completion -->
+          <div class="dash-section">
+            <div class="dash-section-header">
+              <span class="dash-section-title"><i class="bi bi-person-check text-primary-custom me-2"></i>Profile Completion</span>
+            </div>
+            <div class="profile-complete-card">
+              <div class="d-flex justify-content-between align-items-center">
+                <span style="font-size:0.85rem;color:var(--text-main);font-weight:600;">65% Complete</span>
+                <span style="font-size:0.75rem;color:var(--text-muted);">3 tasks left</span>
+              </div>
+              <div class="profile-complete-bar">
+                <div class="profile-complete-fill"></div>
+              </div>
+              <div class="profile-task done"><i class="bi bi-check-circle-fill"></i> Email verified</div>
+              <div class="profile-task done"><i class="bi bi-check-circle-fill"></i> Profile photo added</div>
+              <div class="profile-task done"><i class="bi bi-check-circle-fill"></i> Phone number added</div>
+              <div class="profile-task"><i class="bi bi-circle" style="color:var(--border-color);"></i> Add preferences</div>
+              <div class="profile-task"><i class="bi bi-circle" style="color:var(--border-color);"></i> ID verification</div>
+              <div class="profile-task"><i class="bi bi-circle" style="color:var(--border-color);"></i> Link bank statement</div>
+            </div>
+          </div>
+
+          <!-- Activity Feed -->
+          <div class="dash-section">
+            <div class="dash-section-header">
+              <span class="dash-section-title"><i class="bi bi-activity text-primary-custom me-2"></i>Recent Activity</span>
+            </div>
+            <div class="activity-feed">
+              <div class="activity-item">
+                <div class="activity-dot green"><i class="bi bi-heart-fill"></i></div>
+                <div>
+                  <div class="activity-text">You saved <strong>Modern Luxury Villa</strong></div>
+                  <div class="activity-time">2 hours ago</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-dot blue"><i class="bi bi-calendar-check"></i></div>
+                <div>
+                  <div class="activity-text">Viewing booked for <strong>Ocean View Penthouse</strong></div>
+                  <div class="activity-time">Yesterday at 4:30 PM</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-dot gold"><i class="bi bi-bell-fill"></i></div>
+                <div>
+                  <div class="activity-text">New alert match: <strong>Villa in Malibu</strong></div>
+                  <div class="activity-time">2 days ago</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-dot green"><i class="bi bi-chat-dots"></i></div>
+                <div>
+                  <div class="activity-text">Message from agent <strong>Sarah Mitchell</strong></div>
+                  <div class="activity-time">3 days ago</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-dot blue"><i class="bi bi-search"></i></div>
+                <div>
+                  <div class="activity-text">You searched for <strong>Apartments in New York</strong></div>
+                  <div class="activity-time">4 days ago</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /col-xl-4 -->
+      </div><!-- /row -->
+    </main>
+  </div><!-- /dashboard-wrapper -->
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Theme Toggle
+    const themeBtn = document.getElementById('themeToggle');
+    themeBtn.addEventListener('click', () => {
+      const body = document.body;
+      const icon = themeBtn.querySelector('i');
+      if (body.getAttribute('data-theme') === 'dark') {
+        body.setAttribute('data-theme', 'light');
+        icon.classList.replace('bi-sun-fill', 'bi-moon-fill');
+      } else {
+        body.setAttribute('data-theme', 'dark');
+        icon.classList.replace('bi-moon-fill', 'bi-sun-fill');
+      }
+    });
+
+    // Navbar scroll
+    window.addEventListener('scroll', () => {
+      document.getElementById('navbar').classList.toggle('nav-scroll', window.scrollY > 50);
+    });
+
+    // Sidebar Toggle
+    let sidebarOpen = true;
+    function toggleSidebar() {
+      const sidebar = document.getElementById('dashSidebar');
+      const main = document.getElementById('dashMain');
+      if (window.innerWidth > 991) {
+        sidebarOpen = !sidebarOpen;
+        sidebar.classList.toggle('collapsed', !sidebarOpen);
+        main.classList.toggle('expanded', !sidebarOpen);
+      } else {
+        sidebar.classList.toggle('open');
+      }
+    }
+
+    // Remove saved card
+    function removeCard(btn) {
+      const card = btn.closest('.dash-prop-card');
+      card.style.opacity = '0';
+      card.style.transform = 'translateX(20px)';
+      card.style.transition = 'all 0.3s';
+      setTimeout(() => card.remove(), 300);
+    }
+
+    // Handle mobile resize
+    window.addEventListener('resize', () => {
+      const sidebar = document.getElementById('dashSidebar');
+      const main = document.getElementById('dashMain');
+      if (window.innerWidth > 991) {
+        sidebar.classList.remove('open');
+        if (sidebarOpen) {
+          sidebar.classList.remove('collapsed');
+          main.classList.remove('expanded');
+        }
+      }
+    });
+  </script>
+</body>
+</html>
